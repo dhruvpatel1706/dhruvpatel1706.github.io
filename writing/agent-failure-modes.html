@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pass rates aren't enough: failure-mode tags for coding agents · Dhruv Patel</title>
+<meta name="description" content="When a coding agent fails a task, 63% pass rate tells you nothing about why it failed. An 8-tag failure categorization — hit_iteration_limit, edit_but_no_retest, exit_early — and how it changed my priors on which failures are worth fixing first.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="essay.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90' font-family='serif' fill='%23d4a853'%3ED%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-gradient" aria-hidden="true"></div>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <a href="../index.html" class="topbar-back">Dhruv Patel</a>
+        <span style="color:var(--text-tertiary);">writing / agent-failure-modes</span>
+    </div>
+</div>
+
+<article class="article">
+    <div class="article-eyebrow">agents</div>
+    <h1 class="article-title">Pass rates aren't enough: <em>failure-mode tags</em> for coding agents</h1>
+    <div class="article-meta">
+        <span>2026-04-23</span>
+        <span class="dot"></span>
+        <span>8 min read</span>
+        <span class="dot"></span>
+        <span>swe-agent-lite · v0.2</span>
+    </div>
+
+    <div class="article-body">
+        <p>"Our agent passes 63% of tasks." Okay — <em>why does it fail the other 37%?</em></p>
+
+        <p>SWE-bench-style agent benchmarks produce a single number: tests-pass rate. That's the right top-line metric, and it's almost entirely useless for making the agent better. The thing you actually need, when you're staring at the 37% that failed, is a categorization of <em>how</em> they failed. An agent that fails by hitting its iteration limit is a different problem from one that fails by making the wrong edit is a different problem from one that confidently declares success without running the tests.</p>
+
+        <p>When I built <code>swe-agent-lite</code>, I wanted the framework to produce that categorization automatically. This post is the taxonomy, why each tag is cheap to detect from the trajectory alone, and what the distribution of tags actually revealed when I started running Claude against the task set.</p>
+
+        <h2>The setup</h2>
+
+        <p>swe-agent-lite is deliberately small. 13 curated bug-fix tasks (3 multi-file, 1 hard), 5 tools (<code>read_file</code>, <code>list_dir</code>, <code>edit_file</code>, <code>run_tests</code>, <code>finish</code>), a sandboxed workspace per task. Each task has a canonical fix a human could apply in under a minute. The benchmark is measuring agent <em>reliability</em>, not agent <em>reasoning about complex code</em> — two different capabilities both worth measuring separately.</p>
+
+        <p>Every task run produces a <strong>trajectory</strong>: an ordered list of tool calls the agent made, whether it called <code>finish</code>, and whether pytest passes at the end. The failure-mode tagger is a pure function over that trajectory plus the final score.</p>
+
+        <h2>The eight tags</h2>
+
+        <table>
+            <thead><tr><th>Tag</th><th>Trigger</th><th>What it usually means</th></tr></thead>
+            <tbody>
+                <tr><td><code>hit_iteration_limit</code></td><td>Agent never called <code>finish</code> and we bailed</td><td>Stuck in a loop, or incrementally failing without recognizing it</td></tr>
+                <tr><td><code>never_ran_tests</code></td><td>No <code>run_tests</code> call in the trajectory</td><td>Almost always bad — agent is flying blind</td></tr>
+                <tr><td><code>didnt_edit</code></td><td>No <code>edit_file</code> call before finish</td><td>Agent gave up without attempting a fix</td></tr>
+                <tr><td><code>edit_but_no_retest</code></td><td>Edits weren't followed by a test run before finish</td><td>Agent assumes its fix works without verifying</td></tr>
+                <tr><td><code>tests_were_timing_out</code></td><td>Multiple <code>TIMEOUT</code> outputs from the agent's own test runs</td><td>Agent wrote an infinite loop and didn't diagnose it</td></tr>
+                <tr><td><code>agent_timeout</code></td><td>The scorer's final pytest call itself timed out</td><td>Worse version of the above — agent left the workspace in a hanging state</td></tr>
+                <tr><td><code>exit_early</code></td><td>Agent called <code>finish</code> but tests still fail</td><td>Over-confidence — agent thinks it solved it, didn't</td></tr>
+                <tr><td><code>framework_error:*</code></td><td>Our own code blew up</td><td>Bug in the benchmark runner itself</td></tr>
+            </tbody>
+        </table>
+
+        <p>These are heuristic, not causal. <code>exit_early</code> plus <code>edit_but_no_retest</code> is a strong signal the agent stopped checking its work. <code>hit_iteration_limit</code> plus <code>never_ran_tests</code> probably means the agent was reading files forever and never tried anything. The combinations matter as much as the individual tags.</p>
+
+        <h2>Why trajectory-based tags are the right scope</h2>
+
+        <p>The obvious alternative is LLM-based failure classification: show a judge model the full trajectory and ask "why did this fail?". I considered it, didn't do it. Two reasons:</p>
+
+        <ol>
+            <li><strong>Ground-truth latency.</strong> Trajectory tags run in 10ms on a successful or failed task. LLM classification adds ~5 seconds per task and costs money. When you're running the benchmark in CI on every prompt change, deterministic tagging beats judge-in-the-loop every time.</li>
+            <li><strong>Traceability.</strong> Each tag maps to a specific predicate over the trajectory. If a reviewer disagrees with a tag, they can read the code in 60 seconds and decide whether the predicate is well-formed. A judge model's verdict is a black box that disagrees with you in ways that are hard to audit.</li>
+        </ol>
+
+        <p>The tradeoff is surface area. Trajectory tags only catch failure shapes I thought to enumerate. A novel failure mode — say, an agent that correctly edits the file but deletes the test file too — wouldn't match any of my eight tags. That's a real gap. The mitigation is that I add a new tag the first time I encounter a new shape, and the test set grows with me.</p>
+
+        <h2>What running it actually teaches you</h2>
+
+        <p>Here's a rough distribution from my own runs. Exact numbers depend on which model and system prompt:</p>
+
+        <table>
+            <thead><tr><th>Tag</th><th>Frequency among failures</th><th>Fix difficulty</th></tr></thead>
+            <tbody>
+                <tr><td><code>edit_but_no_retest</code></td><td>most common</td><td>Cheap — add "always run tests after editing" to the system prompt</td></tr>
+                <tr><td><code>exit_early</code></td><td>common</td><td>Cheap — add "only call finish after seeing green tests" to the system prompt</td></tr>
+                <tr><td><code>hit_iteration_limit</code></td><td>middle</td><td>Medium — sometimes the cap is too tight, sometimes the agent is legitimately stuck</td></tr>
+                <tr><td><code>didnt_edit</code></td><td>rare</td><td>Usually signals a task the agent fundamentally doesn't understand</td></tr>
+                <tr><td><code>never_ran_tests</code></td><td>rare</td><td>Easy to prevent with prompt; hard to prevent with certainty</td></tr>
+                <tr><td><code>tests_were_timing_out</code></td><td>rare</td><td>Hard — agent wrote infinite-loop code and failed to diagnose</td></tr>
+            </tbody>
+        </table>
+
+        <p>What this changed about how I think about coding agents:</p>
+
+        <p class="pullquote">Most "agent fails" in benchmark runs aren't reasoning failures. They're <em>procedural</em> failures.</p>
+
+        <p>The agent understood the bug, made the right edit, and then either (a) didn't run the tests before finishing or (b) called <code>finish</code> before checking whether the tests actually passed. Those are cheap prompt fixes. Before I had failure tags, I would have looked at a 63% pass rate and assumed the 37% was "tasks the model can't solve." Post-tagging, most of it is "tasks the model can solve if you remind it to check its work."</p>
+
+        <p>That's a meaningfully different picture. It means the highest-leverage tuning isn't "make the model smarter" — it's "make the system-prompt scaffold more rigorous about the edit-verify-finish loop."</p>
+
+        <h2>What this doesn't catch</h2>
+
+        <ul>
+            <li><strong>Subtle wrong edits.</strong> An agent that edits the wrong file but runs the tests and fails cleanly will show up as a plain failure with no tag. It looks the same as "unsolvable task" in the report. You need to read the trajectory to distinguish. I could add a tag for "edit happened to a file that isn't the one the task is about" but that requires knowing the canonical fix in advance, which is leaky.</li>
+            <li><strong>Overfitting to the tag set.</strong> Once you have a categorization, there's a temptation to optimize only for tag counts going down. That's fine if the tags capture everything that matters; it's dangerous when a new failure mode appears and your dashboard still looks green.</li>
+            <li><strong>Generalization.</strong> These tags were designed around <em>my</em> 5-tool agent surface. An agent with bash access has different failure modes (shell-escape escapes, rm -rf disasters) that need their own tags.</li>
+        </ul>
+
+        <h2>Pattern: what I'd take to any agent benchmark</h2>
+
+        <p>Three rules from building this:</p>
+
+        <ol>
+            <li><strong>Tag the trajectory, not just the outcome.</strong> A boolean "did tests pass" is nowhere near enough. Minimum viable signal is: did the agent finish cleanly, did it verify, and did any tool call produce an error.</li>
+            <li><strong>Pick tag names that are accusations, not descriptions.</strong> <code>edit_but_no_retest</code> says what went wrong in a way a product-minded reader can act on. "Insufficient test verification coverage" says the same thing in bureaucratic language nobody can debug from.</li>
+            <li><strong>Ship the tagger as a pure function.</strong> No LLM in the categorization loop. Determinism is what makes failure modes comparable across runs; an LLM judge that categorizes inconsistently breaks the whole premise.</li>
+        </ol>
+
+        <h2>What this is for, honestly</h2>
+
+        <p>swe-agent-lite isn't a competitor to SWE-bench. It's a <em>smoke test</em> I can run in two minutes after tweaking a system prompt, with enough signal to tell me which direction I moved the agent. That's a useful object, and as far as I can tell, not one that's well-represented in the public research tooling. Most benchmarks are either tiny and useless or enormous and slow. The middle — "small and legible" — is where you actually do iteration.</p>
+
+        <p>The failure-mode tags are what make it legible. Without them it's a pass rate. With them, it's a diagnostic report you can act on.</p>
+
+        <div class="related">
+            <div class="related-label">Related</div>
+            <p><a href="https://github.com/dhruvpatel1706/swe-agent-lite">github.com/dhruvpatel1706/swe-agent-lite</a> &nbsp;·&nbsp; <a href="https://github.com/dhruvpatel1706/swe-agent-lite/blob/main/artifacts/sample_suite.txt">v0.2 suite artifact</a> &nbsp;·&nbsp; <a href="https://www.swebench.com/" target="_blank" rel="noopener">SWE-bench</a></p>
+        </div>
+
+        <div class="article-footer">
+            <div>© 2026 Dhruv Patel</div>
+            <div><a href="judge-calibration.html">← Previous essay</a></div>
+        </div>
+    </div>
+</article>
+
+</body>
+</html>
