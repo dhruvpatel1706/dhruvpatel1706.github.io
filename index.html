@@ -3,17 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dhruv Patel — ML Engineer · Amazon Prime Video · Applied Safety &amp; Interpretability</title>
-<meta name="description" content="SDE II at Amazon Prime Video building LLM-powered systems serving 200M+ users with 99.9% uptime. On the side: open-source tools around Claude — retrieval, agent benchmarks, safety evals, and a mech-interp reproduction that recovers 5/5 of GPT-2's published induction heads.">
+<title>Dhruv Patel — LLM Agent Safety · ICLR 2026 · ex-Amazon</title>
+<meta name="description" content="Engineer and independent researcher on LLM agent safety. Sole author of an ICLR 2026 workshop paper on safety-gated tool-using agents (GIRA + OEP). Currently AI Consultant at Amneal Pharmaceuticals; previously SDE II at Amazon Prime Video, founding engineer at Aspecta.ai. Open-source: 11 repos around Claude — interpretability, evals, agents, retrieval.">
 <meta name="author" content="Dhruv Patel">
-<meta name="keywords" content="ML Engineer, Amazon Prime Video, SDE II, Claude API, LLM, Mechanistic Interpretability, Safety Evals, Agent Benchmarks, Retrieval, RAG, NYC">
+<meta name="keywords" content="LLM Agent Safety, ICLR 2026, GIRA, OEP, Prompt Injection, Tool-Using Agents, Mechanistic Interpretability, Claude API, Anthropic, Amazon Prime Video, Amneal Pharmaceuticals, Aspecta.ai, NYC">
 <meta name="theme-color" content="#0a0a0b">
 
 <!-- Open Graph -->
-<meta property="og:title" content="Dhruv Patel — ML Engineer · Amazon Prime Video · Applied Safety &amp; Interpretability">
-<meta property="og:description" content="SDE II at Amazon Prime Video. Building ML systems that serve 200M+ users and shipping open-source research-adjacent work on the side.">
-<meta property="og:type" content="website">
+<meta property="og:title" content="Dhruv Patel — LLM Agent Safety · ICLR 2026 · ex-Amazon">
+<meta property="og:description" content="Engineer and independent researcher on LLM agent safety. Sole author of an ICLR 2026 workshop paper on safety-gated tool-using agents and prompt-injection defenses. AI Consultant at Amneal · ex-Amazon Prime Video.">
+<meta property="og:type" content="profile">
 <meta property="og:url" content="https://dhruvpatel1706.github.io">
+<meta property="profile:first_name" content="Dhruv">
+<meta property="profile:last_name" content="Patel">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90' font-family='serif' fill='%23d4a853'%3ED%3C/text%3E%3C/svg%3E">
@@ -612,6 +614,220 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
     font-weight: 600;
     font-variant-numeric: tabular-nums;
 }
+.exp-current-pill {
+    display: inline-block;
+    margin-left: var(--s-2);
+    padding: 2px 8px;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--bg-primary);
+    background: var(--accent);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    vertical-align: middle;
+}
+.exp-quiet-pill {
+    display: inline-block;
+    margin-left: var(--s-2);
+    padding: 2px 8px;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    background: transparent;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-full);
+    font-weight: 500;
+    vertical-align: middle;
+}
+
+/* ============================================
+   PUBLICATIONS — featured paper card
+   ============================================ */
+.publications-section {
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(212,168,83,0.06) 0%, transparent 60%),
+        linear-gradient(180deg, transparent, rgba(20,20,22,0.5), transparent);
+}
+.paper-card {
+    position: relative;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: clamp(var(--s-8), 5vw, var(--s-16));
+    background: linear-gradient(180deg, var(--bg-card) 0%, rgba(20,20,22,0.7) 100%);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+}
+.paper-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        var(--accent) 20%,
+        var(--accent-bright) 50%,
+        var(--accent) 80%,
+        transparent 100%);
+}
+.paper-card::after {
+    content: '';
+    position: absolute;
+    top: var(--s-10); left: var(--s-10);
+    bottom: var(--s-10);
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent) 0%, transparent 100%);
+    opacity: 0.4;
+    border-radius: 1px;
+}
+@media (max-width: 768px) {
+    .paper-card::after { display: none; }
+}
+.paper-meta-row {
+    display: flex; flex-wrap: wrap; align-items: center;
+    gap: var(--s-3);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    margin-bottom: var(--s-6);
+}
+.paper-venue-tag {
+    display: inline-flex; align-items: center;
+    padding: 4px 10px;
+    background: var(--accent-muted);
+    border: 1px solid var(--border-accent);
+    color: var(--accent-bright);
+    border-radius: var(--radius-full);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+.paper-meta-text {
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    font-weight: 500;
+}
+.paper-meta-dot {
+    width: 3px; height: 3px;
+    background: var(--text-muted);
+    border-radius: 50%;
+}
+.paper-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
+    margin-bottom: var(--s-4);
+}
+.paper-title em {
+    color: var(--accent);
+    font-style: italic;
+    font-weight: 400;
+}
+.paper-authors {
+    display: flex; align-items: baseline; gap: var(--s-2);
+    font-size: 1rem;
+    margin-bottom: var(--s-8);
+    flex-wrap: wrap;
+}
+.paper-author-name {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+.paper-author-aff {
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+.paper-abstract {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    padding: var(--s-6) 0;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: var(--s-8);
+}
+.paper-abstract p { margin-bottom: var(--s-4); }
+.paper-abstract p:last-child { margin-bottom: 0; }
+.paper-abstract strong { color: var(--accent-bright); font-weight: 600; }
+.paper-abstract em { color: var(--text-primary); font-style: italic; }
+.paper-contributions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-5);
+    margin-bottom: var(--s-8);
+}
+@media (min-width: 768px) {
+    .paper-contributions { grid-template-columns: repeat(3, 1fr); }
+}
+.paper-contrib {
+    display: flex; gap: var(--s-4);
+    align-items: flex-start;
+    padding: var(--s-5);
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--d-normal) ease, background var(--d-normal) ease;
+}
+.paper-contrib:hover {
+    border-color: var(--border-accent);
+    background: var(--accent-muted);
+}
+.paper-contrib-num {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+    padding-top: 2px;
+}
+.paper-contrib-body { display: flex; flex-direction: column; gap: var(--s-2); }
+.paper-contrib-title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+}
+.paper-contrib-text {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+}
+.paper-actions {
+    display: flex; flex-wrap: wrap; gap: var(--s-3);
+    margin-bottom: var(--s-8);
+}
+.paper-cite {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--s-4) var(--s-5);
+}
+.paper-cite-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--text-tertiary);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: var(--s-2);
+}
+.paper-cite-block {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 0;
+    -webkit-overflow-scrolling: touch;
+}
 
 /* ============================================
    WORK CATEGORY — open source repos
@@ -839,6 +1055,54 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
 .writing-card:hover .writing-link { color: var(--accent-bright); }
 .writing-card:hover .writing-link::after { transform: translateX(4px); }
 
+.writing-card-featured {
+    background: linear-gradient(180deg, var(--bg-card) 0%, rgba(212,168,83,0.04) 100%);
+    border-color: var(--border-accent);
+}
+.writing-card-featured::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+@media (min-width: 900px) { .writing-card-featured { grid-column: span 3; } }
+@media (min-width: 900px) { .writing-card-featured .writing-title { font-size: 1.6rem; max-width: 36ch; } }
+@media (min-width: 900px) { .writing-card-featured .writing-excerpt { max-width: 60ch; } }
+.writing-badge {
+    display: inline-flex;
+    padding: 2px 8px;
+    background: var(--accent-muted);
+    border: 1px solid var(--border-accent);
+    color: var(--accent-bright);
+    border-radius: var(--radius-full);
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+}
+.writing-links-row {
+    margin-top: auto;
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--border-subtle);
+    display: flex; align-items: center; gap: var(--s-5);
+    flex-wrap: wrap;
+}
+.writing-links-row .writing-link {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+.writing-link-aux {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    transition: color var(--d-fast);
+    letter-spacing: 0.02em;
+}
+.writing-link-aux:hover { color: var(--accent-bright); }
+
 /* ============================================
    LEADERSHIP / COMMUNITY
    ============================================ */
@@ -1050,9 +1314,9 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
                 <span class="nav-logo-text">Dhruv Patel</span>
             </a>
             <ul class="nav-menu">
+                <li><a href="#publications" class="nav-link">Publications</a></li>
                 <li><a href="#experience" class="nav-link">Experience</a></li>
                 <li><a href="#work" class="nav-link">Open Source</a></li>
-                <li><a href="#projects" class="nav-link">Projects</a></li>
                 <li><a href="#writing" class="nav-link">Writing</a></li>
                 <li><a href="#about" class="nav-link">About</a></li>
                 <li><a href="https://drive.google.com/file/d/1Bt7pn_54GfcofYFdeD7_ng3NreO_mf_r/view?usp=sharing" target="_blank" rel="noopener" class="nav-cta">Resume ↗</a></li>
@@ -1068,6 +1332,7 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
 
 <div class="mobile-menu" id="mobileMenu">
     <ul>
+        <li><a href="#publications" class="nav-link" onclick="document.getElementById('mobileMenu').classList.remove('is-open')">Publications</a></li>
         <li><a href="#experience" class="nav-link" onclick="document.getElementById('mobileMenu').classList.remove('is-open')">Experience</a></li>
         <li><a href="#work" class="nav-link" onclick="document.getElementById('mobileMenu').classList.remove('is-open')">Open Source</a></li>
         <li><a href="#projects" class="nav-link" onclick="document.getElementById('mobileMenu').classList.remove('is-open')">Projects</a></li>
@@ -1088,12 +1353,12 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
                     <span class="status-dot"></span>
                     <span>Open to research-engineer roles at frontier AI labs</span>
                 </div>
-                <div class="hero-eyebrow reveal" data-delay="1">ML Engineer · Amazon Prime Video · NYC</div>
+                <div class="hero-eyebrow reveal" data-delay="1">AI Consultant @ Amneal · ICLR 2026 author · ex-Amazon Prime Video</div>
                 <h1 class="hero-title reveal" data-delay="1">
-                    I build <em>AI systems</em> at scale — and publish the work.
+                    LLM agent <em>safety</em> — designed, shipped, and published.
                 </h1>
                 <p class="hero-sub reveal" data-delay="2">
-                    <strong>SDE II at Amazon Prime Video.</strong> I architect LLM-powered systems processing petabyte-scale data across global regions — work that directly impacts <strong>200M+ users</strong> at <strong>99.9% uptime</strong>. On the side, I ship <strong>open-source research-adjacent tools</strong> — a mech-interp reproduction that recovers 5/5 of GPT-2's published induction heads, safety eval suites, agent benchmarks, and long-form writeups on each.
+                    Engineer and independent researcher on <strong>LLM agent safety</strong>. Sole author of an <a href="https://openreview.net/forum?id=LBt5eX6OKx" target="_blank" rel="noopener" style="color:var(--accent-bright);text-decoration:underline;text-decoration-color:var(--border-accent);text-underline-offset:3px;"><strong>ICLR 2026 workshop paper</strong></a> proposing <strong>GIRA</strong>, a multi-layer safety gate for tool-using agents, paired with <strong>OEP</strong>, an SRE-grounded eval protocol. Currently <strong>AI Consultant at Amneal Pharmaceuticals</strong>; previously <strong>SDE II at Amazon Prime Video</strong> (LLM systems for a 200M+ user catalog) and founding engineer at Aspecta.ai. On the side: 11 open-source repos around Claude — interpretability, evals, agents, retrieval — with committed run artifacts and writeups.
                 </p>
 
                 <div class="visa-badge reveal" data-delay="2">
@@ -1106,12 +1371,12 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
 
                 <div class="hero-metrics reveal" data-delay="3">
                     <div>
-                        <div class="metric-val">200M+</div>
-                        <div class="metric-lbl">Users impacted at Amazon</div>
+                        <div class="metric-val">ICLR '26</div>
+                        <div class="metric-lbl">Workshop paper · sole author</div>
                     </div>
                     <div>
-                        <div class="metric-val">99.9%</div>
-                        <div class="metric-lbl">Multi-region uptime</div>
+                        <div class="metric-val">200M+</div>
+                        <div class="metric-lbl">Users impacted at Amazon</div>
                     </div>
                     <div>
                         <div class="metric-val">5 / 5</div>
@@ -1124,16 +1389,19 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
                 </div>
 
                 <div class="hero-actions reveal" data-delay="4">
-                    <a href="mailto:dhruv17062000@gmail.com" class="btn btn-primary">
-                        Get in touch
+                    <a href="#publications" class="btn btn-primary">
+                        Read the paper
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </a>
-                    <a href="#work" class="btn btn-ghost">See the work</a>
+                    <a href="#work" class="btn btn-ghost">See the open source</a>
                     <a href="https://github.com/dhruvpatel1706" target="_blank" rel="noopener" class="btn-icon" aria-label="GitHub">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                     </a>
                     <a href="https://linkedin.com/in/dhruvpatel1706" target="_blank" rel="noopener" class="btn-icon" aria-label="LinkedIn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </a>
+                    <a href="https://scholar.google.com/citations?hl=en&amp;user=TsF2mM8AAAAJ" target="_blank" rel="noopener" class="btn-icon" aria-label="Google Scholar">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg>
                     </a>
                 </div>
             </div>
@@ -1162,29 +1430,122 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
     </div>
 </section>
 
+<!-- ============================================ PUBLICATIONS ============================================ -->
+<section id="publications" class="section publications-section">
+    <div class="container">
+        <div class="section-head reveal">
+            <div class="section-eyebrow">Publications</div>
+            <h2 class="section-title">A paper on <em>guarded</em> agents.</h2>
+            <p class="section-sub">My ICLR 2026 workshop submission proposing a safety architecture for tool-using LLM agents, plus an SRE-grounded eval protocol for measuring it.</p>
+        </div>
+
+        <article class="paper-card reveal">
+            <div class="paper-meta-row">
+                <span class="paper-venue-tag">ICLR 2026 Workshop</span>
+                <span class="paper-meta-dot"></span>
+                <span class="paper-meta-text">Agents in the Wild</span>
+                <span class="paper-meta-dot"></span>
+                <span class="paper-meta-text">Sole author</span>
+                <span class="paper-meta-dot"></span>
+                <span class="paper-meta-text">Submission</span>
+            </div>
+
+            <h3 class="paper-title"><em>Guarded Tool-Using LLM Agents for Incident Response:</em> A Safety-Gated Architecture and Operational Evaluation Protocol</h3>
+
+            <div class="paper-authors">
+                <span class="paper-author-name">Dhruv Patel</span>
+                <span class="paper-author-aff">— independent</span>
+            </div>
+
+            <div class="paper-abstract">
+                <p>Tool-using LLM agents are increasingly being put on the path to real production action — file mutations, API calls, infrastructure changes — at the same time as we are still discovering the prompt-injection and over-trust failure modes that come with them. This paper makes two contributions toward closing that gap.</p>
+                <p><strong>GIRA</strong> (Guarded Incident Response Agent) is a multi-layer safety gate that <em>separates LLM proposal from action authorization</em>. Five layers — policy, schema, risk, injection detection, and human-in-the-loop escalation — sit between the model's tool call and any state-changing side-effect, so a successful injection or hallucinated action gets caught before it lands in production.</p>
+                <p><strong>OEP</strong> (Operational Evaluation Protocol) is the SRE-grounded eval scaffolding that measures the architecture itself rather than just headline pass rates: <em>blast radius</em>, <em>injection success rate (ISR)</em>, and <em>unauthorized action rate (UAR)</em>, alongside conventional task success — so the safety gate can be regression-tested as the agent is updated.</p>
+            </div>
+
+            <div class="paper-contributions">
+                <div class="paper-contrib">
+                    <div class="paper-contrib-num">01</div>
+                    <div class="paper-contrib-body">
+                        <div class="paper-contrib-title">GIRA architecture</div>
+                        <div class="paper-contrib-text">Five-layer safety gate (policy · schema · risk · injection · escalation) separating proposal from authorization.</div>
+                    </div>
+                </div>
+                <div class="paper-contrib">
+                    <div class="paper-contrib-num">02</div>
+                    <div class="paper-contrib-body">
+                        <div class="paper-contrib-title">OEP protocol</div>
+                        <div class="paper-contrib-text">SRE-grounded eval surface: blast radius + ISR + UAR alongside task success — regression-testable as agents update.</div>
+                    </div>
+                </div>
+                <div class="paper-contrib">
+                    <div class="paper-contrib-num">03</div>
+                    <div class="paper-contrib-body">
+                        <div class="paper-contrib-title">Operational lens</div>
+                        <div class="paper-contrib-text">Frames agent safety in vocabulary on-call engineers already use — so the gate can sit on a real production runbook.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="paper-actions">
+                <a href="https://openreview.net/forum?id=LBt5eX6OKx" target="_blank" rel="noopener" class="btn btn-primary">
+                    Read on OpenReview
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+                <a href="https://scholar.google.com/citations?hl=en&amp;user=TsF2mM8AAAAJ" target="_blank" rel="noopener" class="btn btn-ghost">Google Scholar ↗</a>
+            </div>
+
+            <div class="paper-cite">
+                <div class="paper-cite-label">Cite</div>
+                <pre class="paper-cite-block">@inproceedings{patel2026guarded,
+  title    = {Guarded Tool-Using {LLM} Agents for Incident Response:
+              A Safety-Gated Architecture and Operational Evaluation Protocol},
+  author   = {Patel, Dhruv},
+  booktitle= {ICLR 2026 Workshop on Agents in the Wild},
+  year     = {2026},
+  url      = {https://openreview.net/forum?id=LBt5eX6OKx}
+}</pre>
+            </div>
+        </article>
+    </div>
+</section>
+
 <!-- ============================================ EXPERIENCE ============================================ -->
 <section id="experience" class="section">
     <div class="container">
         <div class="section-head reveal">
             <div class="section-eyebrow">Experience</div>
             <h2 class="section-title">Where I've <em>shipped</em>.</h2>
-            <p class="section-sub">Five years across Amazon, a Series A startup, a manager role on a 9-person ML team, a government research org, and Indian Army defense R&amp;D. Each role a step up in scope, complexity, and stakes.</p>
+            <p class="section-sub">Six years across pharma AI consulting, Amazon Prime Video, a Series A developer-platform startup, an India-based ML engineering role, and Indian Army defense R&amp;D. Each role a step up in scope, complexity, and stakes.</p>
         </div>
 
         <div class="timeline">
 
+            <article class="exp-item exp-current reveal">
+                <div class="exp-head">
+                    <h3 class="exp-company">Amneal Pharmaceuticals <span class="exp-current-pill">Current</span></h3>
+                    <span class="exp-period">2026 — Present</span>
+                </div>
+                <div class="exp-role-line">AI Consultant</div>
+                <div class="exp-location">Long Island, NY</div>
+                <ul class="exp-highlights">
+                    <li><strong>Claude Code research agent for NDC enrichment</strong> — Built an agent that pulled <span class="hl-val">1,000+ NDCs</span> with their attributes from external pharmaceutical data sources <span class="hl-val">in ~5 hours</span> — the same scope a manual offshore effort had covered <span class="hl-val">~250 of in 6 months</span>. Standardized the workflow into a reusable internal tool.</li>
+                    <li><strong>Enterprise AI &amp; data pipelines</strong> — Building AI, data analytics, and master data management pipelines spanning Amneal's pharmaceutical product systems.</li>
+                    <li><strong>Direct application of GIRA-style guards</strong> — Where the agent acts on internal databases, layering policy + schema + risk gates before a write operation lands. The ICLR paper grew out of exactly this kind of production constraint.</li>
+                </ul>
+            </article>
+
             <article class="exp-item reveal">
                 <div class="exp-head">
                     <h3 class="exp-company">Amazon</h3>
-                    <span class="exp-period">2025 — Present</span>
+                    <span class="exp-period">2025 — 2026</span>
                 </div>
                 <div class="exp-role-line">Software Development Engineer II</div>
                 <div class="exp-location">Prime Video CoreTech · New York, NY</div>
                 <ul class="exp-highlights">
-                    <li><strong>LLM-powered classification engine</strong> — Led development of the micro-genre system for Prime Video storefront. Architecture decisions and cross-team coordination with product, design, and ML platform to deliver personalized carousels for <span class="hl-val">200M+ global users</span>.</li>
-                    <li><strong>Petabyte-scale ML pipelines</strong> — Architected real-time systems on AWS SageMaker, DynamoDB, S3, and EMR. <span class="hl-val">30% latency reduction</span> and faster time-to-recommendation through batch optimization.</li>
-                    <li><strong>AI-powered internal agent</strong> — Spearheaded using Amazon Bedrock Agents. Automated on-call escalation workflows for <span class="hl-val">350+ Prime Video engineers</span>.</li>
-                    <li><strong>Multi-region reliability</strong> — Orchestrated cross-regional load testing across IAD, PDX, DUB, and ZAZ. Horizontal scaling to millions of requests/sec at <span class="hl-val">99.9% uptime</span>.</li>
+                    <li><strong>LLM-powered classification engine</strong> — Designed and shipped the micro-genre system for Prime Video's storefront. Personalized title carousels for a <span class="hl-val">200M+ user catalog</span>, with cross-team coordination across product, design, and ML platform.</li>
+                    <li><strong>Real-time ML pipelines</strong> — Built on AWS SageMaker, DynamoDB, S3, and EMR. <span class="hl-val">~30% latency reduction</span> in benchmarked runs; load-tested across IAD, PDX, DUB, ZAZ regions using CloudWatch, ALBs, and CloudFormation.</li>
+                    <li><strong>Bedrock Agents on-call assistant</strong> — Built an internal Amazon Bedrock Agents-based assistant for the on-call escalation workflow, used by <span class="hl-val">350+ Prime Video engineers</span>. <em>First production exposure to tool-using agent safety</em> — directly informed my later GIRA work.</li>
                 </ul>
             </article>
 
@@ -1208,14 +1569,25 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
                     <h3 class="exp-company">NBVP Technologies</h3>
                     <span class="exp-period">2019 — 2022</span>
                 </div>
-                <div class="exp-role-line">Machine Learning Engineer</div>
-                <div class="exp-location">Gujarat, India</div>
+                <div class="exp-role-line">Software Engineer</div>
+                <div class="exp-location">Surat, Gujarat, India</div>
                 <ul class="exp-highlights">
-                    <li><strong>Real-time video violence detection</strong> — Designed and deployed a CNN + LSTM system in PyTorch. Processed <span class="hl-val">10,000+ frames/minute</span> at <span class="hl-val">92.3% accuracy</span>, improving surveillance alert efficiency by 40%.</li>
-                    <li><strong>Scalable vision pipelines</strong> — Built image preprocessing on Airflow + PostgreSQL, handling <span class="hl-val">50,000+ samples</span> for an emotion recognition model at <span class="hl-val">91% accuracy</span>.</li>
-                    <li><strong>Production interview portal</strong> — Full-stack React + Flask deployment for internal recruiting. <span class="hl-val">25% faster page loads</span>, 15% end-user satisfaction lift, 85% adoption in the first month across 200+ users.</li>
-                    <li><strong>Linux-deployable segmentation</strong> — TensorFlow + OpenCV image segmentation supporting <span class="hl-val">20+ defense R&amp;D initiatives</span> with on-device inference.</li>
-                    <li><strong>ML classification in client-server tooling</strong> — Built and validated models inside a tactical AI simulation stack, reducing manual analysis cycles by <span class="hl-val">30%</span>.</li>
+                    <li><strong>Responsive UI for an internal recruiting product</strong> — Mobile, tablet, and desktop support with <span class="hl-val">95%+ browser compatibility</span>. User-satisfaction scores moved from <span class="hl-val">6.2 → 8.9</span> across 150+ surveys.</li>
+                    <li><strong>Real-time interview status via WebSocket</strong> — Live updates that <span class="hl-val">cut page-refresh needs by 85%</span> and lifted candidate-experience scores by 42%.</li>
+                    <li><strong>Redis caching strategy</strong> — Session management and hot-path caching reduced database queries by <span class="hl-val">55%</span> and improved page load by <span class="hl-val">45%</span>.</li>
+                </ul>
+            </article>
+
+            <article class="exp-item reveal">
+                <div class="exp-head">
+                    <h3 class="exp-company">Indian Army <span class="exp-quiet-pill">Defense R&amp;D</span></h3>
+                    <span class="exp-period">2019</span>
+                </div>
+                <div class="exp-role-line">AI / ML Engineer</div>
+                <div class="exp-location">Indore, Madhya Pradesh, India</div>
+                <ul class="exp-highlights">
+                    <li><strong>Real-time image processing system</strong> — Python + OpenCV with multi-threading. <span class="hl-val">120 FPS throughput</span> (60× over baseline) on 1920×1080 video streams at <span class="hl-val">&lt;100ms latency</span>.</li>
+                    <li><strong>Distributed processing pipeline</strong> — Multiprocessing + message queues across 8 CPU cores; <span class="hl-val">6.5× speedup</span>, with the throughput characteristics needed for real-time surveillance.</li>
                 </ul>
             </article>
 
@@ -1519,13 +1891,25 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
     <div class="container">
         <div class="section-head reveal">
             <div class="section-eyebrow">Writing</div>
-            <h2 class="section-title">Three essays on <em>what I built.</em></h2>
-            <p class="section-sub">Long-form writeups on the mechanistic interp reproduction, building a credible safety-eval judge, and why pass rates aren't enough for coding-agent benchmarks. Writing is how I think; these are the technical decisions I'd want a reviewer to see.</p>
+            <h2 class="section-title">Four essays on <em>what I built.</em></h2>
+            <p class="section-sub">The story behind the ICLR paper, and long-form writeups on the mech-interp reproduction, the calibrated safety-eval judge, and why pass rates aren't enough for coding-agent benchmarks. Writing is how I think; these are the technical decisions I'd want a reviewer to see.</p>
         </div>
 
         <div class="writing-grid">
 
-            <article class="writing-card reveal">
+            <article class="writing-card writing-card-featured reveal">
+                <div class="writing-meta">
+                    <span class="writing-badge">ICLR 2026</span><span class="dot"></span><span>research</span><span class="dot"></span><span>10 min read</span>
+                </div>
+                <h3 class="writing-title">The story behind GIRA: why agent safety needs SRE-grade evaluation</h3>
+                <p class="writing-excerpt">The on-call agent I shipped at Amazon was the moment I realized "the model proposed a tool call" and "the system actually executes that tool call" need to be different events. Here's how that observation grew into a five-layer safety gate, an eval protocol that borrows from incident response, and a sole-author submission to ICLR 2026's <em>Agents in the Wild</em> workshop.</p>
+                <div class="writing-links-row">
+                    <a class="writing-link" href="writing/iclr-paper.html">Read the essay</a>
+                    <a class="writing-link-aux" href="https://openreview.net/forum?id=LBt5eX6OKx" target="_blank" rel="noopener">OpenReview ↗</a>
+                </div>
+            </article>
+
+            <article class="writing-card reveal" data-delay="1">
                 <div class="writing-meta">
                     <span>interpretability</span><span class="dot"></span><span>11 min read</span>
                 </div>
@@ -1534,7 +1918,7 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
                 <a class="writing-link" href="writing/induction-heads.html">Read the essay</a>
             </article>
 
-            <article class="writing-card reveal" data-delay="1">
+            <article class="writing-card reveal" data-delay="2">
                 <div class="writing-meta">
                     <span>safety evals</span><span class="dot"></span><span>9 min read</span>
                 </div>
@@ -1543,7 +1927,7 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
                 <a class="writing-link" href="writing/judge-calibration.html">Read the essay</a>
             </article>
 
-            <article class="writing-card reveal" data-delay="2">
+            <article class="writing-card reveal" data-delay="3">
                 <div class="writing-meta">
                     <span>agents</span><span class="dot"></span><span>8 min read</span>
                 </div>
@@ -1609,9 +1993,10 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
         </div>
         <div class="about-grid">
             <div class="about-body reveal">
-                <p>I'm an <strong>ML engineer at Amazon Prime Video</strong> building LLM-powered systems that serve hundreds of millions of users at multi-region scale. The day job is production infrastructure — pipelines, agents, reliability engineering — on systems where a single regression ripples out to tens of millions of streams.</p>
-                <p>Outside of Amazon, I spend my evenings on <strong>open-source research-adjacent work</strong>: reproducing Anthropic's induction-heads result on GPT-2, building safety eval suites with calibrated judges, measuring coding agents with real failure-mode analysis. I try to write code that <em>admits its failure modes</em>. Every repo ships with committed run artifacts so you can see the headline claim before installing. The mech-interp repo has an explicit regression guard for the off-by-one I caught in my own v0.1 — if someone ever reverts the fix, it fails loudly.</p>
-                <p>Currently interviewing for <strong>research-engineer and frontier-engineer roles</strong> at AI labs. Based in New York, open to relocation. STEM OPT, H-1B cap-exempt eligible.</p>
+                <p>I'm an engineer and independent researcher working on <strong>LLM agent safety</strong>. The thread that ties the day job, the paper, and the open-source repos together is the same: <em>tool-using agents are getting put on the path to real production action faster than the safety scaffolding around them is being built</em>. I'm trying to close that gap with code, with measurement, and with writing.</p>
+                <p>Right now I'm <strong>AI Consultant at Amneal Pharmaceuticals</strong>, building Claude-Code-based research agents that pull pharmaceutical product data from external sources at orders of magnitude better throughput than the manual baseline — with the safety gates wrapped tight enough that an agent never writes anything to internal databases without a verified call site. Before that, I was <strong>SDE II at Amazon Prime Video CoreTech</strong>, where I shipped LLM systems for a 200M+ user catalog and a Bedrock Agents on-call assistant for 350+ engineers — the production exposure that became the seed for the ICLR paper.</p>
+                <p>The <strong>ICLR 2026 workshop paper</strong> (<em>Agents in the Wild</em>, sole author) proposes <strong>GIRA</strong>, a five-layer safety gate that separates LLM proposal from action authorization, paired with <strong>OEP</strong>, an SRE-grounded eval protocol that measures blast radius, injection success rate, and unauthorized action rate. The eleven open-source repos either feed into that — <code>claude-evals</code>, <code>swe-agent-lite</code>, <code>mech-interp-starter</code> — or surround it, retrieval and agent-tooling I keep finding myself wanting day-to-day.</p>
+                <p>I write code that <em>admits its failure modes</em>: every repo ships with committed run artifacts so you can read the headline claim before installing, and the mech-interp repo has an explicit regression guard for the off-by-one I caught in my own v0.1. Currently interviewing for <strong>research-engineer and frontier-engineer roles</strong> at AI labs. Based in New York, open to relocation. STEM OPT, H-1B cap-exempt eligible.</p>
             </div>
             <ul class="about-list reveal" data-delay="1">
                 <li class="about-item">
@@ -1620,11 +2005,15 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
                 </li>
                 <li class="about-item">
                     <div class="about-item-lbl">Current role</div>
-                    <div class="about-item-val">SDE II · Amazon Prime Video</div>
+                    <div class="about-item-val">AI Consultant · Amneal Pharmaceuticals</div>
                 </li>
                 <li class="about-item">
                     <div class="about-item-lbl">Focus</div>
-                    <div class="about-item-val">Safety evals · Interpretability · Agents</div>
+                    <div class="about-item-val">LLM agent safety · Evals · Interpretability</div>
+                </li>
+                <li class="about-item">
+                    <div class="about-item-lbl">Latest paper</div>
+                    <div class="about-item-val"><a href="https://openreview.net/forum?id=LBt5eX6OKx" target="_blank" rel="noopener">ICLR 2026 · Agents in the Wild ↗</a></div>
                 </li>
                 <li class="about-item">
                     <div class="about-item-lbl">Visa</div>
@@ -1648,6 +2037,8 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
                         <a href="https://github.com/dhruvpatel1706" target="_blank" rel="noopener">GitHub</a>
                         &nbsp;·&nbsp;
                         <a href="https://linkedin.com/in/dhruvpatel1706" target="_blank" rel="noopener">LinkedIn</a>
+                        &nbsp;·&nbsp;
+                        <a href="https://scholar.google.com/citations?hl=en&amp;user=TsF2mM8AAAAJ" target="_blank" rel="noopener">Google Scholar</a>
                     </div>
                 </li>
             </ul>
@@ -1761,6 +2152,8 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
                     dhruv17062000@gmail.com
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
+                <a href="https://openreview.net/forum?id=LBt5eX6OKx" target="_blank" rel="noopener" class="btn btn-ghost">ICLR 2026 paper ↗</a>
+                <a href="https://scholar.google.com/citations?hl=en&amp;user=TsF2mM8AAAAJ" target="_blank" rel="noopener" class="btn btn-ghost">Google Scholar ↗</a>
                 <a href="https://github.com/dhruvpatel1706" target="_blank" rel="noopener" class="btn btn-ghost">GitHub ↗</a>
                 <a href="https://linkedin.com/in/dhruvpatel1706" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn ↗</a>
                 <a href="https://drive.google.com/file/d/1Bt7pn_54GfcofYFdeD7_ng3NreO_mf_r/view?usp=sharing" target="_blank" rel="noopener" class="btn btn-ghost">Résumé ↗</a>
