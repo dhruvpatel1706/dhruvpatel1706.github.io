@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Why your LLM judge might be wrong — and how to measure it · Dhruv Patel</title>
+<title>Why your LLM judge might be wrong, and how to measure it · Dhruv Patel</title>
 <meta name="description" content="Claude-judges-Claude is the default setup for safety evals and the most obvious critique. The fix isn't to abandon LLM judges; it's to ship a hand-labeled gold set, run the judge on it, and publish its accuracy alongside every subject-model number.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
@@ -26,7 +26,7 @@
 
 <article class="article">
     <div class="article-eyebrow">safety evals</div>
-    <h1 class="article-title">Why your LLM judge might be <em>wrong</em> — and how to measure it</h1>
+    <h1 class="article-title">Why your LLM judge might be <em>wrong</em>, and how to measure it</h1>
     <div class="article-meta">
         <span>2026-04-23</span>
         <span class="dot"></span>
@@ -36,23 +36,23 @@
     </div>
 
     <div class="article-body">
-        <p>If you're running LLM-based safety evals, your numbers are standing on a hidden assumption: <em>the judge is right</em>. Every published "Claude scored 87% on sycophancy" or "GPT-4 passed 12 of 15 jailbreak attempts" rests on a model-graded verdict that almost nobody audits. The obvious critique — "you're asking Claude to grade Claude" — is the correct critique, and it's usually handwaved away.</p>
+        <p>If you're running LLM-based safety evals, your numbers are standing on a hidden assumption: <em>the judge is right</em>. Every published "Claude scored 87% on sycophancy" or "GPT-4 passed 12 of 15 jailbreak attempts" rests on a model-graded verdict that almost nobody audits. The obvious critique ("you're asking Claude to grade Claude") is the correct critique, and it's usually handwaved away.</p>
 
         <p>I handwaved it away in v0.1 of <code>claude-evals</code>. v0.2 is the fix. This is the design, the gold-set format, and the specific failure modes it catches.</p>
 
-        <h2>The problem, stated cleanly</h2>
+        <h2>The problem: stated cleanly</h2>
 
-        <p>A safety eval produces two numbers: the subject model's pass rate and an implicit judge accuracy. Most suites only report the first. That's fine when the judge is a hard-coded regex or a pytest assertion — those are themselves either correct or not, and you can audit them cheaply. It's <em>not</em> fine when the judge is an LLM, because the LLM's verdicts are:</p>
+        <p>A safety eval produces two numbers: the subject model's pass rate and an implicit judge accuracy. Most suites only report the first. That's fine when the judge is a hard-coded regex or a pytest assertion (both are themselves either correct or not, and you can audit them cheaply). It's <em>not</em> fine when the judge is an LLM, because the LLM's verdicts are:</p>
 
         <ul>
             <li>Non-deterministic across temperatures and sampling seeds (though <code>messages.parse</code> with the same model is usually stable enough).</li>
-            <li>Subject to the same biases the subject model has — a sycophantic judge will under-call sycophantic responses; a refusal-happy judge will overcount refusals as "appropriate".</li>
+            <li>Subject to the same biases the subject model has. A sycophantic judge will under-call sycophantic responses; a refusal-happy judge will overcount refusals as "appropriate".</li>
             <li>Sensitive to rubric phrasing in ways you can't always intuit from the rubric itself.</li>
         </ul>
 
         <p class="pullquote">A subject pass rate of 90% is meaningless without knowing whether the judge's own accuracy is 95% or 70%.</p>
 
-        <p>If the judge is 70% accurate, any subject number you publish is essentially noise. If the judge is 95%, a 90% subject is real signal. That's not a small gap — it's the difference between "we measured something" and "we made a number up".</p>
+        <p>If the judge is 70% accurate, any subject number you publish is essentially noise. If the judge is 95%, a 90% subject is real signal. That's not a small gap. It's the difference between "we measured something" and "we made a number up".</p>
 
         <h2>The fix: gold sets per eval</h2>
 
@@ -68,35 +68,35 @@
                     the square root of 144 is 14."
   gold_passed: false</code></pre>
 
-        <p>The responses are canned, not sampled — no API call happens when you run <code>claude-evals calibrate</code>. What gets called is the <em>judge</em>, on each canned response through the same rubric a real eval run would use. The calibration scorer compares every <code>(gold_passed, judge_passed)</code> pair and produces a confusion matrix per eval.</p>
+        <p>The responses are canned, not sampled, no API call happens when you run <code>claude-evals calibrate</code>. What gets called is the <em>judge</em>, on each canned response through the same rubric a real eval run would use. The calibration scorer compares every <code>(gold_passed, judge_passed)</code> pair and produces a confusion matrix per eval.</p>
 
         <h2>What the gold set needs to contain</h2>
 
-        <p>The temptation is to fill the gold set with unambiguous examples — clearly passing, clearly failing — to make the numbers look good. That defeats the whole point. The gold set has to include the <em>edge cases</em> you care about catching:</p>
+        <p>The temptation is to fill the gold set with unambiguous examples, clearly passing, clearly failing, to make the numbers look good. That defeats the whole point. The gold set has to include the <em>edge cases</em> you care about catching:</p>
 
         <table>
             <thead><tr><th>Gold shape</th><th>What it tests in the judge</th></tr></thead>
             <tbody>
                 <tr>
-                    <td><strong>Clear pass</strong> — model maintains correct answer crisply</td>
+                    <td><strong>Clear pass:</strong> model maintains correct answer crisply</td>
                     <td>Judge baseline accuracy. Should be near 100%.</td>
                 </tr>
                 <tr>
-                    <td><strong>Clear fail</strong> — model capitulates outright</td>
+                    <td><strong>Clear fail:</strong> model capitulates outright</td>
                     <td>Same, other direction. Any miss here is a red flag.</td>
                 </tr>
                 <tr>
-                    <td><strong>Hedged response</strong> — polite disagreement, vague on the factual point</td>
+                    <td><strong>Hedged response:</strong> polite disagreement, vague on the factual point</td>
                     <td>Does the judge treat "waffle" as pass or fail? Most judges lean pass; mine labels these as fail on purpose.</td>
                 </tr>
                 <tr>
-                    <td><strong>Polite correction</strong> — model corrects the user firmly but warmly</td>
+                    <td><strong>Polite correction:</strong> model corrects the user firmly but warmly</td>
                     <td>Does the judge penalize tone? A bad judge might flag "you're actually right" tones as capitulation even when the substance is maintained.</td>
                 </tr>
             </tbody>
         </table>
 
-        <p>My v0.2 gold-sycophancy set has 12 cases: 5 clearly maintained, 5 clearly capitulated, 2 deliberately hedged. Hedged cases are labeled <code>gold_passed: false</code> because my rubric wants unambiguous maintenance. The judge agreeing with me on the hedged ones is actually the test — if it also calls them failures, the rubric is doing its job.</p>
+        <p>My v0.2 gold-sycophancy set has 12 cases: 5 clearly maintained, 5 clearly capitulated, 2 deliberately hedged. Hedged cases are labeled <code>gold_passed: false</code> because my rubric wants unambiguous maintenance. The judge agreeing with me on the hedged ones is the actual test: if it also calls them failures, the rubric is doing its job.</p>
 
         <h2>What the calibrate command outputs</h2>
 
@@ -113,11 +113,11 @@
 
         <p>Now when I publish a real subject-model sycophancy run at 90%, I can also say: "the judge is 92% accurate on the gold set." Any two claimed pass rates that differ by less than (100% − 92%) = 8 percentage points are <em>not distinguishable</em> at this judge fidelity. That makes model comparisons honest in a way a raw pass rate can't.</p>
 
-        <p>The CLI also exits non-zero if any eval's judge accuracy drops below 75% — a configurable threshold below which the judge is close enough to a coin flip that any subject numbers are suspect.</p>
+        <p>The CLI also exits non-zero if any eval's judge accuracy drops below 75% (a configurable threshold below which the judge is close enough to a coin flip that any subject numbers are suspect).</p>
 
         <h2>The failure mode to watch for</h2>
 
-        <p>The biggest risk with this setup: <strong>the gold set tests the judge you wrote, not the eval you wanted</strong>. If I write a sycophancy rubric that specifically penalizes "waffle" as failure, and I hand-label my hedged cases the same way, the judge and I agree — but that agreement doesn't tell me whether the rubric itself captures what anyone else means by "sycophancy".</p>
+        <p>The biggest risk with this setup: <strong>the gold set tests the judge you wrote, not the eval you wanted</strong>. If I write a sycophancy rubric that specifically penalizes "waffle" as failure, and I hand-label my hedged cases the same way, the judge and I agree, but that agreement doesn't tell me whether the rubric itself captures what anyone else means by "sycophancy".</p>
 
         <p>There's no automated fix for this. You need a second human to hand-label independently, compute inter-annotator agreement, and iterate on the rubric if agreement is low. For a portfolio project I've documented this explicitly as a known gap; for a production safety eval the gold labeling has to be multi-annotator from day one.</p>
 
@@ -126,7 +126,7 @@
         <ul>
             <li><strong>Cross-family judge validation.</strong> Claude-graded-by-Claude with a gold set is stronger than Claude-graded-by-Claude without one, but a Claude-graded-by-GPT-4 setup (or vice versa) is stronger still. The CLI supports <code>--judge-model</code> so cross-family is a one-line flag; I haven't benchmarked it yet.</li>
             <li><strong>Novel case discovery.</strong> The gold set is static. Model behaviors shift over time; a new model might exhibit a new kind of capitulation the gold set doesn't test. You have to refresh it periodically.</li>
-            <li><strong>Statistical certainty at N=12.</strong> Twelve cases isn't a benchmark, it's a sanity check. I'd want 50 per eval for real work. The gold set is intentionally small so the hand-labeling cost stays low — the cost of doubling N isn't just labor, it's careful thought about each case, which scales worse than you'd hope.</li>
+            <li><strong>Statistical certainty at N=12.</strong> Twelve cases isn't a benchmark, it's a sanity check. I'd want 50 per eval for real work. The gold set is intentionally small so the hand-labeling cost stays low, the cost of doubling N isn't just labor, it's careful thought about each case, which scales worse than you'd hope.</li>
         </ul>
 
         <h2>Why I think this matters more than a better eval</h2>

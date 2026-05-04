@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reproducing induction heads in GPT-2 — and the bug I caught in my own v0.1 · Dhruv Patel</title>
+<title>Reproducing induction heads in GPT-2, and the bug I caught in my own v0.1 · Dhruv Patel</title>
 <meta name="description" content="I shipped a prefix-matching score, then realized my formula was off by one. Here's the math, how I caught it, why publishing the wrong result would have been worse than publishing nothing, and what the corrected run shows on real GPT-2.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
@@ -26,7 +26,7 @@
 
 <article class="article">
     <div class="article-eyebrow">interpretability</div>
-    <h1 class="article-title">Reproducing induction heads in GPT-2 — and the <em>bug</em> I caught in my own v0.1</h1>
+    <h1 class="article-title">Reproducing induction heads in GPT-2, and the <em>bug</em> I caught in my own v0.1</h1>
     <div class="article-meta">
         <span>2026-04-23</span>
         <span class="dot"></span>
@@ -36,7 +36,7 @@
     </div>
 
     <div class="article-body">
-        <p>I wanted to do one end-to-end mechanistic-interpretability project that one person could verify from scratch — no <a href="https://transformer-circuits.pub/" target="_blank" rel="noopener">Transformer Circuits</a> mystique, no 2000-line frameworks, just a published finding I could reproduce with paper, pencil, and about 300 lines of numpy. I picked the <strong>induction-head result</strong> from Olsson et al. (Anthropic, 2022): the observation that small transformers develop specific attention heads that implement an in-context-copying circuit, and that ablating those heads tanks in-context learning.</p>
+        <p>I wanted to do one end-to-end mechanistic-interpretability project that one person could verify from scratch, no <a href="https://transformer-circuits.pub/" target="_blank" rel="noopener">Transformer Circuits</a> mystique, no 2000-line frameworks, just a published finding I could reproduce with paper, pencil, and about 300 lines of numpy. I picked the <strong>induction-head result</strong> from Olsson et al. (Anthropic, 2022): the observation that small transformers develop specific attention heads that implement an in-context-copying circuit, and that ablating those heads tanks in-context learning.</p>
 
         <p>I shipped v0.1 of <code>mech-interp-starter</code>. The README said I had recovered 5/5 of GPT-2 small's published induction heads. Two hours later, I realized my scoring formula was off by one. This post is the math, the bug, why I'm glad I caught it before anyone looked, and what the corrected v0.2 run actually shows.</p>
 
@@ -46,13 +46,13 @@
 
         <pre><code>[t_0, t_1, ..., t_{N-1}, t_0, t_1, ..., t_{N-1}]</code></pre>
 
-        <p>The induction-head <em>circuit</em> works like this: at some position <code>q</code> in the second half, the model has just seen a token it's already seen once before (because the sequence is repeating). A well-formed induction head attends from <code>q</code> to the first-half position that holds the token that originally <em>followed</em> the current one — then the OV circuit copies that token's embedding into the residual stream, which gets read out as the model's prediction for position <code>q + 1</code>.</p>
+        <p>The induction-head <em>circuit</em> works like this: at some position <code>q</code> in the second half, the model has just seen a token it's already seen once before (because the sequence is repeating). A well-formed induction head attends from <code>q</code> to the first-half position that holds the token that originally <em>followed</em> the current one, then the OV circuit copies that token's embedding into the residual stream, which gets read out as the model's prediction for position <code>q + 1</code>.</p>
 
         <p>If the head works, the prediction for <code>q + 1</code> is exactly what actually comes next in the repeat. Measuring that attention pattern is the <em>prefix-matching score</em>.</p>
 
-        <h2>The math — step by step</h2>
+        <h2>The math: step by step</h2>
 
-        <p>For query position <code>q</code> in the second copy (where <code>N ≤ q &lt; 2N</code>), the token at <code>q</code> is <code>t_{q-N}</code>. The previous occurrence of that same token is at position <code>q - N</code>. The token <em>right after</em> that previous occurrence — the one the induction head should attend to and copy — is at position <code>(q - N) + 1 = q - N + 1</code>.</p>
+        <p>For query position <code>q</code> in the second copy (where <code>N ≤ q &lt; 2N</code>), the token at <code>q</code> is <code>t_{q-N}</code>. The previous occurrence of that same token is at position <code>q - N</code>. The token <em>right after</em> that previous occurrence, the one the induction head should attend to and copy, is at position <code>(q - N) + 1 = q - N + 1</code>.</p>
 
         <p>So the canonical key for query <code>q</code> is <strong><code>q - N + 1</code></strong>.</p>
 
@@ -60,7 +60,7 @@
 
         <pre><code>score_h = mean over q in [N, 2N - 1) of attention_pattern[h, q, q - N + 1]</code></pre>
 
-        <p>The upper range is <code>2N - 1</code> because the last query position would need a target at <code>N</code>, which is in the second copy — not a meaningful match.</p>
+        <p>The upper range is <code>2N - 1</code> because the last query position would need a target at <code>N</code>, which is in the second copy, not a meaningful match.</p>
 
         <h2>The bug</h2>
 
@@ -71,17 +71,17 @@ key_positions   = query_positions - N</code></pre>
 
         <p>Which means the target for query <code>q</code> was <code>q - N</code>, not <code>q - N + 1</code>. I was measuring attention to the <em>previous occurrence</em> of the current token, not to the token <em>right after</em> it.</p>
 
-        <p>These are <em>different heads</em>. The first pattern is a "duplicate-token" head — it recognizes that the current token has appeared before. That's a precursor circuit, and some heads do exhibit it, but it's not the full induction pattern. A real induction head does the next step: copying the follow-up token.</p>
+        <p>These are <em>different heads</em>. The first pattern is a "duplicate-token" head: it recognizes that the current token has appeared before. That's a precursor circuit, and some heads do exhibit it, but it's not the full induction pattern. A real induction head does the next step: copying the follow-up token.</p>
 
         <div class="callout warning">
-            <strong>The silent failure mode.</strong> My v0.1 unit tests all passed. Because I'd constructed them against my own (wrong) scoring formula, they were self-consistent with the bug. The tests enforced nothing about the paper's definition — only that my scoring function agreed with itself.
+            <strong>The silent failure mode.</strong> My v0.1 unit tests all passed. Because I'd constructed them against my own (wrong) scoring formula, they were self-consistent with the bug. The tests enforced nothing about the paper's definition, only that my scoring function agreed with itself.
         </div>
 
         <h2>How I caught it</h2>
 
         <p>I didn't catch it from the code. I caught it from the <em>docstring</em>.</p>
 
-        <p>I was writing the v0.2 README, pulling the derivation out of my head so I could explain it cleanly. Halfway through the example walk-through — "at position i = N+1, the head has just seen <code>t_0</code>" — I noticed my example said the target was position 1, which is where <code>t_1</code> lives, not <code>t_0</code>. My code said the target was position <code>i - N = 1</code>. Those two facts agreed. But <em>why</em> the target was 1 was the question: was it because "attend to previous <code>t_0</code>" or because "attend to the token after previous <code>t_0</code>"?</p>
+        <p>I was writing the v0.2 README, pulling the derivation out of my head so I could explain it cleanly. Halfway through the example walk-through, "at position i = N+1, the head has just seen <code>t_0</code>", I noticed my example said the target was position 1, which is where <code>t_1</code> lives, not <code>t_0</code>. My code said the target was position <code>i - N = 1</code>. Those two facts agreed. But <em>why</em> the target was 1 was the question: was it because "attend to previous <code>t_0</code>" or because "attend to the token after previous <code>t_0</code>"?</p>
 
         <p>I went back to the paper. Quote from Olsson et al.:</p>
 
@@ -93,7 +93,7 @@ key_positions   = query_positions - N</code></pre>
 
         <p>Published induction heads in GPT-2 small, per multiple Transformer Circuits posts: <code>L5H1</code>, <code>L5H5</code>, <code>L6H9</code>, <code>L7H2</code>, <code>L7H10</code>. Running v0.2 with the corrected formula, <code>n_trials=10</code>, <code>seed=0</code>:</p>
 
-        <pre><code>             gpt2 — prefix-matching top 10
+        <pre><code>             gpt2, prefix-matching top 10
 ┏━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━┓
 ┃ rank ┃ layer.head ┃  score ┃
 ┡━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━┩
@@ -113,11 +113,11 @@ recovered 5/5 published induction heads in top-10.</code></pre>
 
         <p>All five published heads in the <em>top five slots</em>, each scoring above 0.81. The gap between rank 5 (0.81) and rank 6 (0.54) is wide enough that the signal isn't ambiguous.</p>
 
-        <h2>The causal check — ablation</h2>
+        <h2>The causal check: ablation</h2>
 
         <p>Prefix-matching is descriptive: "this head attends at the right position." It doesn't prove the head is causally responsible for in-context learning. For that, you ablate: zero out the head's contribution and measure how much in-context-learning loss gets worse.</p>
 
-        <p>v0.2 ships a context manager that hooks the attention-output projection and zeroes the per-head slice of its input before projection — which is equivalent to removing that head's contribution to the residual stream. ICL loss = cross-entropy on predicting tokens in the second copy (the half where in-context learning kicks in).</p>
+        <p>v0.2 ships a context manager that hooks the attention-output projection and zeroes the per-head slice of its input before projection, which is equivalent to removing that head's contribution to the residual stream. ICL loss = cross-entropy on predicting tokens in the second copy (the half where in-context learning kicks in).</p>
 
         <p>Zeroing the five published induction heads vs a matched null set of non-induction heads at similar layers:</p>
 
@@ -141,11 +141,11 @@ recovered 5/5 published induction heads in top-10.</code></pre>
 
         <p>A <strong>23× gap</strong> in loss increase. Ablating the induction-head set collapses in-context learning entirely; ablating five random mid-layer heads produces a modest bump consistent with "any five heads contribute something." This is the specific claim the paper makes: these heads are causally responsible for ICL, not just correlated with it.</p>
 
-        <p>Note one sharp caveat: I initially tried the null ablation on early layers (L0, L1, L2). Those produced +553% loss — not because those heads are doing the same thing as induction heads, but because early-layer attention is a prerequisite (the "previous-token heads" that load the keys). Using early-layer ablation as a null is a wrong null. The mid-to-late-layer null (L8, L9, L11) gives the clean comparison.</p>
+        <p>Note one sharp caveat: I initially tried the null ablation on early layers (L0, L1, L2). Those produced +553% loss, not because those heads are doing the same thing as induction heads, but because early-layer attention is a prerequisite (the "previous-token heads" that load the keys). Using early-layer ablation as a null is a wrong null. The mid-to-late-layer null (L8, L9, L11) gives the clean comparison.</p>
 
         <h2>What I learned about how to ship this kind of work</h2>
 
-        <p>The bug was cheap to fix and expensive to have shipped un-caught. The tests didn't save me — they <em>hid</em> the bug because I'd written them against the wrong spec. What saved me was trying to explain the math to someone else (the README's imagined reader) and noticing my prose disagreed with my code.</p>
+        <p>The bug was cheap to fix and expensive to have shipped un-caught. The tests didn't save me, they <em>hid</em> the bug because I'd written them against the wrong spec. What saved me was trying to explain the math to someone else (the README's imagined reader) and noticing my prose disagreed with my code.</p>
 
         <p class="pullquote">Writing about code has higher fidelity than testing code. Tests check your code against itself; prose checks your code against <em>the world</em>.</p>
 
@@ -168,13 +168,13 @@ recovered 5/5 published induction heads in top-10.</code></pre>
 
         <h2>What's next</h2>
 
-        <p>v0.3's roadmap: effective OV through layer norm, sweep <code>N</code> for the phase-transition plot, extend to Pythia-160M and Gemma-2-2B. v0.5 starts on SAE feature extraction — the standard next rung of interp work and the one most likely to have a v0.1 bug lurking in it, so I'm holding it for last.</p>
+        <p>v0.3's roadmap: effective OV through layer norm, sweep <code>N</code> for the phase-transition plot, extend to Pythia-160M and Gemma-2-2B. v0.5 starts on SAE feature extraction, the standard next rung of interp work and the one most likely to have a v0.1 bug lurking in it, so I'm holding it for last.</p>
 
         <p>The full code, the three committed run artifacts (prefix-matching, copying, ablation), and the regression-guard test are in the repo. The README says "recovered 5/5 published heads" and the artifact underneath it is real.</p>
 
         <div class="related">
             <div class="related-label">Related</div>
-            <p><a href="https://github.com/dhruvpatel1706/mech-interp-starter">github.com/dhruvpatel1706/mech-interp-starter</a> &nbsp;·&nbsp; <a href="https://github.com/dhruvpatel1706/mech-interp-starter/tree/main/artifacts">Committed run artifacts</a> &nbsp;·&nbsp; <a href="https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/" target="_blank" rel="noopener">Olsson et al. (2022) — original paper</a></p>
+            <p><a href="https://github.com/dhruvpatel1706/mech-interp-starter">github.com/dhruvpatel1706/mech-interp-starter</a> &nbsp;·&nbsp; <a href="https://github.com/dhruvpatel1706/mech-interp-starter/tree/main/artifacts">Committed run artifacts</a> &nbsp;·&nbsp; <a href="https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/" target="_blank" rel="noopener">Olsson et al. (2022), original paper</a></p>
         </div>
 
         <div class="article-footer">
